@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>音声認識で画像表示</title>
+<style>
+  body { text-align: center; font-family: sans-serif; padding: 20px; }
+  img { width: 200px; height: auto; margin-top: 20px; border: 2px solid #ccc; }
+  button { font-size: 1.2em; padding: 10px 20px; margin-top: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h1>声で画像表示</h1>
+<button onclick="startRecognition()">🎤 音声認識開始</button>
+<p id="result">認識結果: </p>
+<img id="image" src="" alt="ここに画像が表示されます">
+
+<script>
+const images = {
+  "あ": "A.png",
+  "い": "I.png",
+  "う": "U.png",
+  "え": "E.png",
+  "お": "O.png",
+  "ん": "N.png",
+  "べ": "BE.png"
+};
+
+function startRecognition() {
+  if (!('webkitSpeechRecognition' in window)) {
+    alert("このブラウザは音声認識に対応していません（iPhoneのSafariで試してください）");
+    return;
+  }
+
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = "ja-JP";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript.trim();
+    document.getElementById("result").textContent = "認識結果: " + text;
+
+    if (images[text]) {
+      document.getElementById("image").src = images[text];
+    } else {
+      document.getElementById("image").src = "";
+      alert("対応する画像がありません: " + text);
+    }
+  };
+
+  recognition.onerror = function(e) {
+    alert("音声認識エラー: " + e.error);
+  };
+}
+</script>
+
+</body>
+</html>
